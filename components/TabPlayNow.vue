@@ -1,19 +1,25 @@
 <script setup lang="ts">
-import type {FormErrorEvent} from "#ui/types";
+import type { FormErrorEvent } from "#ui/types";
 
-import {useWebSocket} from "@vueuse/core";
-
-const host = window?.location.host || 'localhost:3000'; // todo change this
 const router = useRouter();
-
-const { status, data, send, open, close } = useWebSocket(`ws://${host}/api/websocket`);
 const toast = useToast();
-const state = reactive({ username: "" });
+const state = reactive({ username: "", lobbyCode: "" });
+const hasLobbyCode = computed(() => state.lobbyCode.length > 3);
+const userStore = useUserStore();
+
+function joinGame() {
+  const code = state.lobbyCode || createGameCode();
+  console.log(code);
+  router.push(`/game/${code}`);
+}
 
 async function validate() {
   const errors = [];
-  if(!state.username || state.username.length < 3) {
-    errors.push({name: "Invalid Username", message: "Username must be 3 characters long!"});
+  if (!state.username || state.username.length < 3) {
+    errors.push({
+      name: "Invalid Username",
+      message: "Username must be 3 characters long!",
+    });
   }
   return errors;
 }
@@ -23,28 +29,25 @@ async function onError(event: FormErrorEvent) {
     toast.add({
       title: event.errors[0].name,
       description: event.errors[0].message,
-      color: 'error'
+      color: "error",
     });
   }
 }
 
-function createGameCode() {
-  return Math.random().toString(36).substring(2, 8);
-}
-function createGame() {
-  router.push(`/game/${createGameCode()}`);
-}
-
 function onSubmit() {
   toast.add({
-    title: 'Form Success',
-    description: 'You entered the lobby!',
-    color: 'success'
+    title: "Form Success",
+    description: "You entered the lobby!",
+    color: "success",
   });
 
-  send(state.username)
+  userStore.setUser({
+    username: state.username,
+    avatar: 0,
+  });
+
   state.username = "";
-  createGame()
+  joinGame();
 }
 </script>
 
@@ -58,23 +61,44 @@ function onSubmit() {
       @error="onError"
       @submit="onSubmit"
     >
-      <UFormField label="Username" help="Your name will be visible for the other players." required>
-        <UInput v-model="state.username"  class="w-full" placeholder="Enter username...." icon="i-lucide-user" />
+      <UFormField
+        label="Username"
+        help="Your name will be visible for the other players."
+        required
+      >
+        <UInput
+          v-model="state.username"
+          size="lg"
+          class="w-full"
+          placeholder="Enter username...."
+          icon="i-lucide-user"
+        />
       </UFormField>
+
+      <UFormField
+        class="mt-4"
+        label="Lobbycode (Optional)"
+        help="Enter a lobbycode if you have one."
+      >
+        <UInput
+          v-model="state.lobbyCode"
+          size="lg"
+          class="w-full"
+          placeholder="Enter a lobbycode"
+          icon="i-lucide-user"
+        />
+      </UFormField>
+
       <UButton
         type="submit"
         color="neutral"
-        class="mt-2 flex justify-center items-center w-full text-center"
+        class="mt-2 flex justify-center items-center w-full text-center uppercase"
         size="xl"
         trailing-icon="i-lucide-joystick"
         loading-auto
       >
-        CREATE A LOBBY
+        {{ hasLobbyCode ? "JOIN" : "CREATE" }} A LOBBY
       </UButton>
-      <pre>
-        data:
-        {{data}}
-      </pre>
     </UForm>
   </div>
 </template>
