@@ -1,11 +1,13 @@
 <template>
   <section class="mx-auto p-6 space-y-6 overflow-hidden">
     <h2 class="text-3xl font-bold flex items-center gap-2">
-      🎮 <span>Game Description: <em>Impostor – Guess the Word</em></span>
+      🎮 <span>How To Play Blendin?</span>
     </h2>
 
+    <hr>
+
     <p class="text-lg leading-relaxed">
-      <strong>Impostor</strong> is a fun and social word-guessing game for
+      <strong>Blendin</strong> is a fun and social word-guessing game for
       <strong>3 or more players</strong> 🧑‍🤝‍🧑.
     </p>
 

@@ -3,9 +3,9 @@
     <img
       src="~/assets/images/logo.png"
       alt=""
-      class="h-[300px] drop-shadow-2xl animate-bounce"
+      class="h-[200px] drop-shadow-2xl "
     />
-    <AppGlassContainer class="w-[50%] h-[40%] overflow-y-auto animate-bounce">
+    <AppGlassContainer class="w-[50%] h-[40rem] overflow-y-auto">
       <HomeTabs />
     </AppGlassContainer>
   </main>

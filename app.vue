@@ -1,7 +1,7 @@
 <template>
-  <UApp>
+  <UApp class="max-h-screen">
     <NuxtLayout>
-      <NuxtPage class="text-3xl" />
+      <NuxtPage />
     </NuxtLayout>
   </UApp>
 </template>
