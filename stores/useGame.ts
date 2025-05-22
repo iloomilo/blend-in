@@ -13,7 +13,10 @@ export const useGameStore = defineStore("game", () => {
   const userStore = useUserStore();
 
   function getConnectUrl(code: string, user: User): string {
-    const url = new URL("ws://localhost:3000/api/websocket");
+    const protocol = window.location.protocol === "https:" ? "wss" : "ws";
+    const host = window.location.host;
+    const url = new URL(`${protocol}://${host}/api/websocket`);
+
     url.searchParams.set("lobby", code);
     url.searchParams.set("username", user.username);
     url.searchParams.set("avatar", user.avatar.toString());
