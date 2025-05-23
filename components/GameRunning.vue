@@ -4,7 +4,7 @@ const userStore = useUserStore();
 
 const text = computed(() => {
   return userStore.user.id === gameStore.lobby?.impostor
-    ? "You are the Impostor"
+    ? "You are the Imposter"
     : `The word is: ${gameStore.lobby?.word}`;
 });
 </script>

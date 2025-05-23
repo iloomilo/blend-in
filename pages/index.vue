@@ -1,11 +1,15 @@
 <template>
   <main class="h-screen flex justify-center items-center pb-40 flex-col">
-    <img
-      src="~/assets/images/logo.png"
-      alt=""
-      class="h-[200px] drop-shadow-2xl "
+    <NuxtImg
+      src="/images/logo.png"
+      alt="Blendin Logo"
+      width="300"
+      height="300"
+      placeholder
+      format="webp"
+      class="drop-shadow-2xl rounded-full"
     />
-    <AppGlassContainer class="w-[50%] h-[40rem] overflow-y-auto">
+    <AppGlassContainer class="w-xl max-h-[600px] overflow-y-auto">
       <HomeTabs />
     </AppGlassContainer>
   </main>

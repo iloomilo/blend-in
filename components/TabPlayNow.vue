@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import type { FormErrorEvent } from "#ui/types";
-
 const router = useRouter();
 const toast = useToast();
 const state = reactive({ username: "", lobbyCode: "" });
@@ -8,35 +6,13 @@ const hasLobbyCode = computed(() => state.lobbyCode.length > 3);
 const userStore = useUserStore();
 
 function joinGame() {
-  const code = state.lobbyCode || createGameCode();
-  console.log(code);
+  const code = state?.lobbyCode.length > 3 ? state.lobbyCode : createGameCode();
   router.push(`/game/${code}`);
-}
-
-async function validate() {
-  const errors = [];
-  if (!state.username || state.username.length < 3) {
-    errors.push({
-      name: "Invalid Username",
-      message: "Username must be 3 characters long!",
-    });
-  }
-  return errors;
-}
-
-async function onError(event: FormErrorEvent) {
-  if (event?.errors?.length) {
-    toast.add({
-      title: event.errors[0].name,
-      description: event.errors[0].message,
-      color: "error",
-    });
-  }
 }
 
 function onSubmit() {
   toast.add({
-    title: "Form Success",
+    title: "Lobby: " + state.lobbyCode,
     description: "You entered the lobby!",
     color: "success",
   });
@@ -53,18 +29,15 @@ function onSubmit() {
 
 <template>
   <div class="p-4 w-full h-full flex justify-center items-center flex-col">
-    <h1 class="mb-5">Start a lobby to play with your friends!</h1>
+    <h1 class="mb-5 text-2xl">Start a lobby to play with your friends!</h1>
     <UForm
       :state="state"
       class="w-[70%] flex flex-col justify-between h-full"
-      :validate="validate"
-      @error="onError"
       @submit="onSubmit"
     >
       <UFormField
         label="Username"
         help="Your name will be visible for the other players."
-        required
       >
         <UInput
           v-model="state.username"
@@ -92,7 +65,7 @@ function onSubmit() {
       <UButton
         type="submit"
         color="neutral"
-        class="mt-2 flex justify-center items-center w-full text-center uppercase"
+        class="mt-3 flex justify-center items-center w-full text-center uppercase"
         size="xl"
         trailing-icon="i-lucide-joystick"
         loading-auto

@@ -6,6 +6,10 @@ const users = computed(() => gameStore.lobby?.users);
 const userStore = useUserStore();
 const gameStore = useGameStore();
 
+const isGameStartable = computed(() => {
+  return Object.keys(gameStore.lobby?.users ?? {}).length >= 3;
+});
+
 const { copy } = useClipboard();
 const toast = useToast();
 
@@ -56,11 +60,14 @@ function handleCopy() {
             color="neutral"
             class="mt-2 flex justify-center items-center w-full text-center uppercase"
             size="xl"
-            :disabled="gameStore.lobby?.owner !== userStore.user.id"
-            trailing-icon="i-lucide-joystick"
+            :loading="!isGameStartable"
+            :disabled="
+              gameStore.lobby?.owner !== userStore.user.id || !isGameStartable
+            "
+            :trailing-icon="isGameStartable ? 'i-lucide-joystick' : ''"
             @click="gameStore.startGame"
           >
-            Start the game
+            {{ isGameStartable ? "Start the game" : "Waiting for players..." }}
           </UButton>
         </ul>
       </div>
