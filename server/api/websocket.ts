@@ -4,6 +4,7 @@ import { User } from "~/types/User";
 import { WebSocketMessage } from "~/types/WebsocketMessage";
 import { createGameCode, getRandomUsername } from "~/utils/lobbyUtil";
 import { getMessage } from "~/utils/messageUtil";
+import { words } from "../data/words";
 
 const lobbies = new Map<string, Lobby>();
 
@@ -60,7 +61,6 @@ function getImpostor(lobby: Lobby): string | null {
 }
 
 function getRandomWord(): string {
-  const words = ["Meister", "Felix", "Jäger"];
   return words[Math.floor(Math.random() * words.length)];
 }
 
