@@ -143,7 +143,7 @@ export default defineWebSocketHandler({
             const message = getMessage({ type: "update-lobby", lobby });
             peer.send(message);
             peer.publish(lobbyCode, message);
-          }, 3500);
+          }, 4000);
           break;
       }
 
