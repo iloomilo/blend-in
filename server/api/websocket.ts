@@ -1,7 +1,7 @@
 import { Lobby } from "~/types/Lobby";
 import { LobbyStates } from "~/types/LobbyStates";
 import { User } from "~/types/User";
-import { WebSocketMessage } from "~/types/WebsocketMessage";
+import { WebSocketMessage } from "~/types/WebSocketMessage";
 import { createGameCode, getRandomUsername } from "~/utils/lobbyUtil";
 import { getMessage } from "~/utils/messageUtil";
 import { words } from "../data/words";
@@ -79,6 +79,7 @@ export default defineWebSocketHandler({
       user.id = peer.id;
       lobby.users[peer.id] = user;
     }
+
     if (!lobby) return;
 
     const lobbyMessage = getMessage({
@@ -156,8 +157,8 @@ export default defineWebSocketHandler({
       peer.publish(lobbyCode, msg);
     } catch (e) {
       console.error("Error handling WebSocket message:", e);
+    } finally {
+      console.log("WebSocket message received", peer, message);
     }
-
-    console.log("WebSocket message received", peer, message);
   },
 });
