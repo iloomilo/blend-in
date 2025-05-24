@@ -7,5 +7,7 @@ export interface Lobby {
   createdAt: number;
   owner?: string;
   impostor?: string;
+  currentTurnUser?: string;
+  firstTurnUser?: string;
   word?: string;
 }
