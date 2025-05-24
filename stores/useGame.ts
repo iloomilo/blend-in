@@ -4,7 +4,7 @@ import { ref } from "vue";
 import { useWebSocket, type UseWebSocketReturn } from "@vueuse/core";
 import type { Lobby } from "~/types/Lobby";
 import type { User } from "~/types/User";
-import type { WebSocketMessage } from "~/types/WebsocketMessage";
+import type { WebSocketMessage } from "~/types/WebSocketMessage";
 
 export const useGameStore = defineStore("game", () => {
   const socket = ref<UseWebSocketReturn<string> | null>(null);
@@ -29,7 +29,6 @@ export const useGameStore = defineStore("game", () => {
       try {
         if (!newValue) return;
         const data: WebSocketMessage = JSON.parse(newValue);
-        console.log("hey", data);
         // todo maybe refactor this to a reflection map
         switch (data.type) {
           case "update-user":
