@@ -1,7 +1,8 @@
 <template>
   <div
-    class="min-h-screen background-svg bg-[radial-gradient(circle_at_50%_30%,_#FFD59E,_#ff9642,_#E17055,_#C94A4A)] rounded-xl text-white text-xl font-semibold"
+    class="relative min-h-screen background-svg bg-[radial-gradient(circle_at_50%_30%,_#FFD59E,_#ff9642,_#E17055,_#C94A4A)] rounded-xl text-white text-xl font-semibold"
   >
+    <AppInfos class="absolute top-5" />
     <main class="grid h-[80vh] place-content-center">
       <NuxtImg
         src="/images/logo.png"
