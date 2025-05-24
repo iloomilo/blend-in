@@ -12,8 +12,15 @@ export const useUserStore = defineStore("user", () => {
     Object.assign(user, { ...newUser });
   }
 
+  function resetUser() {
+    user.avatar = 0;
+    user.id = "";
+    user.username = "";
+  }
+
   return {
     user,
     setUser,
+    resetUser,
   };
 });

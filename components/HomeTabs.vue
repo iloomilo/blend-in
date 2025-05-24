@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import type { TabsItem } from "@nuxt/ui";
 
+const userStore = useUserStore();
+const gameStore = useGameStore();
+
 const items = ref<TabsItem[]>([
   {
     label: "Play Now",
@@ -11,6 +14,11 @@ const items = ref<TabsItem[]>([
     icon: "i-lucide-circle-help",
   },
 ]);
+
+onMounted(() => {
+  userStore.resetUser();
+  gameStore;
+});
 </script>
 
 <template>

@@ -61,6 +61,12 @@ export const useGameStore = defineStore("game", () => {
     socket.value?.send(message);
   }
 
+  function resetGame() {
+    lobby.value = null;
+    lobbyCode.value = null;
+    socket.value = null;
+  }
+
   function disconnect() {
     socket.value?.close();
     socket.value = null;
@@ -80,5 +86,6 @@ export const useGameStore = defineStore("game", () => {
     disconnect,
     startGame,
     setLobby,
+    resetGame,
   };
 });
