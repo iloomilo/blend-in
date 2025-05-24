@@ -5,25 +5,27 @@ const state = reactive({ username: "", lobbyCode: "" });
 const hasLobbyCode = computed(() => state.lobbyCode.length > 3);
 const userStore = useUserStore();
 
-function joinGame() {
+function joinGame(): string {
   const code = state?.lobbyCode.length > 3 ? state.lobbyCode : createGameCode();
   router.push(`/game/${code}`);
+  return code;
 }
 
 function onSubmit() {
-  toast.add({
-    title: "Lobby: " + state.lobbyCode,
-    description: "You entered the lobby!",
-    color: "success",
-  });
-
   userStore.setUser({
     username: state.username,
     avatar: 0,
   });
 
   state.username = "";
-  joinGame();
+
+  const code = joinGame();
+
+  toast.add({
+    title: "Lobby: " + code,
+    description: "You entered the lobby!",
+    color: "success",
+  });
 }
 </script>
 
