@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import GameCounter from "~/components/GameCounter.vue";
 import GameDecision from "~/components/GameDecision.vue";
+import GameEnd from "~/components/GameEnd.vue";
 import GameLobby from "~/components/GameLobby.vue";
 import GameTurn from "~/components/GameTurn.vue";
 import GameVotePlayer from "~/components/GameVotePlayer.vue";
@@ -17,7 +18,11 @@ const text = computed(() => {
     : `The word is: ${game.lobby?.word}`;
 });
 
-const hideWordStates = [LobbyStates.STARTING, LobbyStates.PRE_LOBBY];
+const hideWordStates = [
+  LobbyStates.STARTING,
+  LobbyStates.PRE_LOBBY,
+  LobbyStates.END,
+];
 
 const hideWord = computed(() => {
   const state = game.lobby?.state;
@@ -30,7 +35,7 @@ const componentMap = {
   [LobbyStates.RUNNING]: GameTurn,
   [LobbyStates.PRE_LOBBY]: GameLobby,
   [LobbyStates.STARTING]: GameCounter,
-  [LobbyStates.END]: GameCounter,
+  [LobbyStates.END]: GameEnd,
 };
 
 onMounted(() => {

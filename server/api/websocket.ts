@@ -39,6 +39,14 @@ function createLobby(): Lobby {
   };
 }
 
+function resetLobby(lobby: Lobby): void {
+  lobby.currentVote = undefined;
+  lobby.currentTurnUser = undefined;
+  lobby.firstTurnUser = undefined;
+  lobby.impostor = undefined;
+  lobby.word = undefined;
+}
+
 function getLobbyByPeerId(
   peerId: string
 ): { lobby: Lobby; lobbyCode: string } | null {
@@ -146,6 +154,10 @@ export default defineWebSocketHandler({
       switch (data.type) {
         case "start-game":
           if (lobby?.owner !== peer.id) return;
+
+          //reset lobby, if you hit play again
+          resetLobby(lobby);
+
           const impostor = getRandomUser(lobby);
           const currentTurnUser = getRandomUser(lobby);
 
@@ -188,11 +200,11 @@ export default defineWebSocketHandler({
           // update decision
           decisions.set(lobbyCode, vote);
 
-          const totalVotes = vote.anotherRound + vote.startVote;
+          const totalTurnVotes = vote.anotherRound + vote.startVote;
           const totalPlayers = Object.keys(lobby.users).length;
 
           // decide next state
-          if (totalVotes >= totalPlayers) {
+          if (totalTurnVotes >= totalPlayers) {
             lobby.state =
               vote.startVote > vote.anotherRound
                 ? LobbyStates.VOTE
@@ -201,7 +213,28 @@ export default defineWebSocketHandler({
             // clean up the vote
             decisions.delete(lobbyCode);
           }
+          break;
 
+        case "vote-user":
+          const votedPeerId = data.peerId;
+          if (!votedPeerId) return;
+
+          if (!lobby.currentVote) {
+            lobby.currentVote = {};
+          }
+
+          const oldValue = lobby.currentVote[votedPeerId] ?? 0;
+          const newValue = oldValue + 1;
+          lobby.currentVote[votedPeerId] = newValue;
+
+          let totalImpostorVotes = 0;
+          Object.values(lobby.currentVote).forEach((count: number) => {
+            totalImpostorVotes += count;
+          });
+
+          if (totalImpostorVotes >= Object.keys(lobby.users).length) {
+            lobby.state = LobbyStates.END;
+          }
           break;
       }
 
@@ -209,6 +242,8 @@ export default defineWebSocketHandler({
         type: "update-lobby",
         lobby,
       });
+
+      console.log(msg);
 
       peer.send(msg);
       peer.publish(lobbyCode, msg);

@@ -1,5 +1,6 @@
 import type { LobbyStates } from "./LobbyStates";
 import type { User } from "./User";
+import type { ImposterVote } from "./Votes";
 
 export interface Lobby {
   state: LobbyStates;
@@ -10,4 +11,5 @@ export interface Lobby {
   currentTurnUser?: string;
   firstTurnUser?: string;
   word?: string;
+  currentVote?: ImposterVote;
 }
