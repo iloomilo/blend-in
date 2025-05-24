@@ -17,7 +17,7 @@ const items = ref<TabsItem[]>([
 
 onMounted(() => {
   userStore.resetUser();
-  gameStore;
+  gameStore.resetGame();
 });
 </script>
 
