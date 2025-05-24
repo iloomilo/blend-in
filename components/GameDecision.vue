@@ -17,7 +17,7 @@ function handleDecision(decision: LobbyStates) {
 
 <template>
   <div
-    class="flex gap-2 mt-4"
+    class="flex justify-center gap-2 mt-4"
     v-if="gameStore.lobby?.state === LobbyStates.DECISION && !hasVoted"
   >
     <UButton

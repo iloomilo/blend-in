@@ -27,7 +27,7 @@ function handleCopy() {
 </script>
 
 <template>
-  <AppGlassContainer class="w-[40%]">
+  <AppGlassContainer class="w-[500px]">
     <div v-if="users">
       <h1 class="text-center text-2xl font-bold uppercase">
         <span class="mr-2">Lobby: {{ gameStore.lobbyCode }} </span>

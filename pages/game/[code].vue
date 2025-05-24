@@ -44,8 +44,8 @@ onMounted(() => {
 });
 </script>
 <template>
-  <main class="flex justify-center items-center h-screen flex-col">
+  <div class="w-full flex flex-col items-center">
     <span v-if="!hideWord" class="text-5xl">{{ text }}</span>
     <component :is="componentMap[game.lobby?.state ?? LobbyStates.RUNNING]" />
-  </main>
+  </div>
 </template>

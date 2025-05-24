@@ -13,7 +13,7 @@ onMounted(() => {
 });
 </script>
 <template>
-  <main class="h-screen flex justify-center items-center">
+  <main class="flex justify-center items-center">
     <h1 class="text-5xl">{{ counter }}</h1>
   </main>
 </template>

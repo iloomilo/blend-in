@@ -20,7 +20,6 @@ function onSubmit() {
   state.username = "";
 
   const code = joinGame();
-
   toast.add({
     title: "Lobby: " + code,
     description: "You entered the lobby!",
