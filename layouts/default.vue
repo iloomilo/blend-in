@@ -4,15 +4,17 @@
   >
     <AppInfos class="absolute top-5" />
     <main class="grid h-[80vh] place-content-center">
-      <NuxtImg
-        src="/images/logo.png"
-        alt="Blendin Logo"
-        width="300"
-        height="300"
-        placeholder
-        format="webp"
-        class="drop-shadow-2xl rounded-full mx-auto"
-      />
+      <NuxtLink to="/">
+        <NuxtImg
+          src="/images/logo.png"
+          alt="Blendin Logo"
+          width="300"
+          height="300"
+          placeholder
+          format="webp"
+          class="drop-shadow-2xl rounded-full mx-auto"
+        />
+      </NuxtLink>
       <slot />
     </main>
   </div>
