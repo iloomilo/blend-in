@@ -5,8 +5,10 @@ import { WebSocketMessage } from "~/types/WebSocketMessage";
 import { createGameCode, getRandomUsername } from "~/utils/lobbyUtil";
 import { getMessage } from "~/utils/messageUtil";
 import { words } from "../data/words";
+import { DecisionVote } from "~/types/Votes";
 
 const lobbies = new Map<string, Lobby>();
+const decisions = new Map<string, DecisionVote>();
 
 function getUrlData(urlString: string): { lobbyCode: string; user: User } {
   const url = new URL(urlString);
@@ -50,7 +52,19 @@ function getLobbyByPeerId(
   return null;
 }
 
-function getImpostor(lobby: Lobby): string | null {
+function getNextTurnUserKey(lobby: Lobby): string {
+  const userKeys = Object.keys(lobby.users);
+  const currentIndex = userKeys.findIndex(
+    (key) => key === lobby.currentTurnUser
+  );
+
+  const nextIndex =
+    currentIndex === -1 ? 0 : (currentIndex + 1) % userKeys.length;
+
+  return userKeys[nextIndex];
+}
+
+function getRandomUser(lobby: Lobby): string | null {
   const userIds = Object.keys(lobby.users);
   if (userIds.length === 0) return null;
 
@@ -132,12 +146,15 @@ export default defineWebSocketHandler({
       switch (data.type) {
         case "start-game":
           if (lobby?.owner !== peer.id) return;
-          const impostor = getImpostor(lobby);
+          const impostor = getRandomUser(lobby);
+          const currentTurnUser = getRandomUser(lobby);
 
-          if (!impostor) return;
+          if (!impostor || !currentTurnUser) return;
           lobby.impostor = impostor;
           lobby.word = getRandomWord();
           lobby.state = LobbyStates.STARTING;
+          lobby.currentTurnUser = currentTurnUser;
+          lobby.firstTurnUser = currentTurnUser;
 
           setTimeout(() => {
             lobby.state = LobbyStates.RUNNING;
@@ -145,6 +162,46 @@ export default defineWebSocketHandler({
             peer.send(message);
             peer.publish(lobbyCode, message);
           }, 4000);
+          break;
+
+        case "next-turn":
+          const nextTurnUser = getNextTurnUserKey(lobby);
+          if (lobby.firstTurnUser === nextTurnUser) {
+            lobby.state = LobbyStates.DECISION;
+          }
+
+          lobby.currentTurnUser = nextTurnUser;
+          break;
+
+        case "decide":
+          const vote: DecisionVote = decisions.get(lobbyCode) ?? {
+            anotherRound: 0,
+            startVote: 0,
+          };
+          // count vote
+          if (data.decision === LobbyStates.RUNNING) {
+            vote.anotherRound++;
+          } else {
+            vote.startVote++;
+          }
+
+          // update decision
+          decisions.set(lobbyCode, vote);
+
+          const totalVotes = vote.anotherRound + vote.startVote;
+          const totalPlayers = Object.keys(lobby.users).length;
+
+          // decide next state
+          if (totalVotes >= totalPlayers) {
+            lobby.state =
+              vote.startVote > vote.anotherRound
+                ? LobbyStates.VOTE
+                : LobbyStates.RUNNING;
+
+            // clean up the vote
+            decisions.delete(lobbyCode);
+          }
+
           break;
       }
 
@@ -158,7 +215,7 @@ export default defineWebSocketHandler({
     } catch (e) {
       console.error("Error handling WebSocket message:", e);
     } finally {
-      console.log("WebSocket message received", peer, message);
+      console.log("WebSocket message received", peer.id, message);
     }
   },
 });
