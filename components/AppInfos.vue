@@ -24,7 +24,7 @@
           />
         </NuxtLink>
       </UTooltip>
-      <UTooltip :delay-duration="0" text="❤️ Support me on Kofi!">
+      <UTooltip :delay-duration="0" text="❤️ Support me on Ko-fi!">
         <NuxtLink
           to="https://ko-fi.com/iloomilo"
           target="_blank"
