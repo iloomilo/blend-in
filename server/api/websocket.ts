@@ -35,6 +35,7 @@ function createLobby(): Lobby {
   return {
     state: LobbyStates.PRE_LOBBY,
     users: {},
+    language: 'en',
     createdAt: Date.now(),
   };
 }
@@ -82,8 +83,10 @@ function getRandomUser(lobby: Lobby): string | null {
   return lobby.users[impostorId]?.id ?? null;
 }
 
-function getRandomWord(): string {
-  return words[Math.floor(Math.random() * words.length)];
+function getRandomWord(lobby: Lobby): string {
+  const lang = lobby.language ?? 'en';
+  const list = words[lang]
+  return list[Math.floor(Math.random() * list.length)];
 }
 
 export default defineWebSocketHandler({
@@ -144,7 +147,7 @@ export default defineWebSocketHandler({
   error(peer, error) {
     console.log("WebSocket connection error", peer, error);
   },
-  message(peer, message) {
+  async message(peer, message) {
     try {
       const data: WebSocketMessage = message.json();
       const result = getLobbyByPeerId(peer.id);
@@ -163,7 +166,7 @@ export default defineWebSocketHandler({
 
           if (!impostor || !currentTurnUser) return;
           lobby.impostor = impostor;
-          lobby.word = getRandomWord();
+          lobby.word = getRandomWord(lobby);
           lobby.state = LobbyStates.STARTING;
           lobby.currentTurnUser = currentTurnUser;
           lobby.firstTurnUser = currentTurnUser;
