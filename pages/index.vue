@@ -1,5 +1,5 @@
 <template>
-  <AppGlassContainer class="w-xl max-h-[600px] overflow-y-auto">
+  <AppGlassContainer class="w-lg max-h-[50vh]">
     <HomeTabs />
   </AppGlassContainer>
 </template>

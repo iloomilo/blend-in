@@ -1,10 +1,16 @@
 <script setup lang="ts">
+import { availableLanguages } from '~/config/availableLanguages';
+import type { AvailableLanguages } from '~/types/Languages';
+
+
 const router = useRouter();
 const toast = useToast();
 const state = reactive({ username: "", lobbyCode: "" });
 const hasLobbyCode = computed(() => state.lobbyCode.length > 3);
 const userStore = useUserStore();
 
+
+const selectedLanguage = ref<AvailableLanguages>('de')
 function joinGame(): string {
   const code = state?.lobbyCode.length > 3 ? state.lobbyCode : createGameCode();
   router.push(`/game/${code}`);
@@ -26,6 +32,17 @@ function onSubmit() {
     color: "success",
   });
 }
+
+const languageItems = computed(() =>
+  Object.entries(availableLanguages).map(([key, flag]) => ({
+    value: key,
+    label: flag, 
+  }))
+);
+
+watch(selectedLanguage, (newLanguage: AvailableLanguages) => {
+  userStore.setLanguage(newLanguage);
+});
 </script>
 
 <template>
@@ -36,18 +53,28 @@ function onSubmit() {
       class="w-[70%] flex flex-col justify-between h-full"
       @submit="onSubmit"
     >
-      <UFormField
-        label="Username"
-        help="Your name will be visible for the other players."
-      >
-        <UInput
-          v-model="state.username"
-          size="lg"
-          class="w-full"
-          placeholder="Enter username...."
-          icon="i-lucide-user"
-        />
-      </UFormField>
+      <div class="flex gap-2  items-center">
+        <UFormField
+          label="Username"
+          help="Your name will be visible for the other players."
+        >
+    
+          <div class="flex gap-4">
+            <UInput
+              v-model="state.username"
+              size="lg"
+              class="w-full"
+              placeholder="Enter your username"
+              icon="i-lucide-user"
+            />
+            <USelect
+               v-model="selectedLanguage"
+              :items="languageItems"
+              class="w-18"
+            />
+          </div>
+        </UFormField>
+      </div>
 
       <UFormField
         class="mt-4"

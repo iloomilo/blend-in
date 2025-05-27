@@ -3,7 +3,7 @@
     class="relative min-h-screen background-svg rounded-xl text-white text-xl font-semibold"
   >
     <AppInfos class="absolute top-5" />
-    <main class="grid h-[80vh] place-content-center">
+    <main class="grid h-full place-content-center">
       <NuxtLink to="/">
         <NuxtImg
           src="/images/logo.png"

@@ -1,1 +1,3 @@
-export type AvailableLanguages = 'de' | 'en'
+import type { availableLanguages } from "~/config/availableLanguages";
+
+export type AvailableLanguages = keyof typeof availableLanguages;

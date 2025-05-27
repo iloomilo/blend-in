@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import type { AvailableLanguages } from "~/types/Languages";
 import type { User } from "~/types/User";
 
 export const useUserStore = defineStore("user", () => {
@@ -6,10 +7,15 @@ export const useUserStore = defineStore("user", () => {
     id: "",
     username: "",
     avatar: 0,
+    language: "de"
   });
 
   function setUser(newUser: User) {
     Object.assign(user, { ...newUser });
+  }
+
+  function setLanguage(newLanguage: AvailableLanguages) {
+    user.language = newLanguage;
   }
 
   function resetUser() {
@@ -22,5 +28,7 @@ export const useUserStore = defineStore("user", () => {
     user,
     setUser,
     resetUser,
+    setLanguage
+    
   };
 });

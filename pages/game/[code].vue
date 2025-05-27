@@ -12,17 +12,18 @@ const route = useRoute();
 const code = (route.params.code ?? "") as string;
 const userStore = useUserStore();
 
-const text = computed(() => {
+const turnState = computed(() => {
   return userStore.user.id === game.lobby?.impostor
-    ? "You are the Imposter"
-    : `The word is: ${game.lobby?.word}`;
-});
-
+    ? 'You are the <span class="text-red-500">Imposter</span>'
+    : `The word is: <span class="text-orange-500">${game.lobby?.word}</span>`;
+  });
+ 
 const hideWordStates = [
   LobbyStates.STARTING,
   LobbyStates.PRE_LOBBY,
   LobbyStates.END,
 ];
+
 
 const hideWord = computed(() => {
   const state = game.lobby?.state;
@@ -45,7 +46,7 @@ onMounted(() => {
 </script>
 <template>
   <div class="w-full flex flex-col items-center">
-    <span v-if="!hideWord" class="text-5xl">{{ text }}</span>
+    <span v-if="!hideWord" class="text-4xl" v-html="turnState" />
     <component :is="componentMap[game.lobby?.state ?? LobbyStates.RUNNING]" />
   </div>
 </template>

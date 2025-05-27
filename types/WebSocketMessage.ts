@@ -8,4 +8,5 @@ export type WebSocketMessage =
   | { type: "start-game" }
   | { type: "next-turn" }
   | { type: "decide"; decision: LobbyStates }
-  | { type: "vote-user"; peerId: string };
+  | { type: "vote-user"; peerId: string }
+  | { type: 'return-to-home', errorMessage: string};

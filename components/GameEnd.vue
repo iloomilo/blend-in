@@ -22,10 +22,10 @@ function getHighestVoted(lobby: Lobby | null): string {
 }
 
 function getImposter(): User | null {
-  const highestPeerId = getHighestVoted(gameStore.lobby);
-  if (!highestPeerId) return null;
+  const imposterPeerId = gameStore.lobby?.impostor;
+  if (!imposterPeerId) return null;
 
-  return gameStore.lobby?.users[highestPeerId] ?? null;
+  return gameStore.lobby?.users[imposterPeerId] ?? null;;
 }
 
 function handlePlayAgain(): void {

@@ -2,6 +2,13 @@
 const gameStore = useGameStore();
 const userStore = useUserStore();
 
+const currentTurnUserName = computed(() => {
+  const currentTurnUser = gameStore.lobby?.currentTurnUser;
+  if (!currentTurnUser) return "Unkown";
+
+  return gameStore.lobby?.users[currentTurnUser]?.username ?? "Unknown";
+});
+
 function handleContinue() {
   gameStore.socket?.send(
     getMessage({
@@ -12,7 +19,8 @@ function handleContinue() {
 </script>
 
 <template>
-  <div
+  <div>    
+    <div
     v-if="gameStore.lobby?.currentTurnUser === userStore.user.id"
     class="flex flex-col gap-2 items-center"
   >
@@ -21,4 +29,8 @@ function handleContinue() {
       >Continue</UButton
     >
   </div>
+  <span v-else class="text-2xl">Current Turn: {{ currentTurnUserName }}</span>
+
+  </div>
+
 </template>

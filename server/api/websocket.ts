@@ -6,6 +6,7 @@ import { createGameCode, getRandomUsername } from "~/utils/lobbyUtil";
 import { getMessage } from "~/utils/messageUtil";
 import { words } from "../data/words";
 import { DecisionVote } from "~/types/Votes";
+import { AvailableLanguages } from "~/types/Languages";
 
 const lobbies = new Map<string, Lobby>();
 const decisions = new Map<string, DecisionVote>();
@@ -15,6 +16,7 @@ function getUrlData(urlString: string): { lobbyCode: string; user: User } {
   let avatar = Number(url.searchParams.get("avatar") ?? 0);
   let lobbyCode = url.searchParams.get("lobby") || createGameCode();
   let username = url.searchParams.get("username") || getRandomUsername();
+  let language = url.searchParams.get("language") || "en";
 
   if (isNaN(avatar)) {
     avatar = 0;
@@ -23,6 +25,7 @@ function getUrlData(urlString: string): { lobbyCode: string; user: User } {
   const user: User = {
     username: username,
     avatar: avatar,
+    language: language as AvailableLanguages
   };
 
   return {
@@ -89,6 +92,11 @@ function getRandomWord(lobby: Lobby): string {
   return list[Math.floor(Math.random() * list.length)];
 }
 
+function doesUsernameExistInLobby(lobby: Lobby, username: string): boolean {
+  const usernames = Object.values(lobby.users).map(user => user.username);
+  return usernames.includes(username);
+}
+
 export default defineWebSocketHandler({
   open(peer) {
     const { lobbyCode, user } = getUrlData(peer.request.url);
@@ -96,11 +104,22 @@ export default defineWebSocketHandler({
     if (!lobbies.has(lobbyCode)) {
       const lobby = createLobby();
       lobby.owner = peer.id;
+      lobby.language = user.language ?? 'en';
       lobbies.set(lobbyCode, lobby);
     }
 
     const lobby = lobbies.get(lobbyCode);
+
     if (lobby && lobby.users) {
+      if(doesUsernameExistInLobby(lobby, user.username)) {
+        peer.send(getMessage({
+          type: "return-to-home",
+          errorMessage: `Username "${user.username}" already exists in this lobby. Please choose a different username.`
+          }));
+        peer.close();
+        return;
+    }
+
       user.id = peer.id;
       lobby.users[peer.id] = user;
     }
@@ -147,7 +166,7 @@ export default defineWebSocketHandler({
   error(peer, error) {
     console.log("WebSocket connection error", peer, error);
   },
-  async message(peer, message) {
+  message(peer, message) {
     try {
       const data: WebSocketMessage = message.json();
       const result = getLobbyByPeerId(peer.id);

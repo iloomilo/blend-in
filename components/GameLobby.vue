@@ -29,7 +29,7 @@ function handleCopy() {
 <template>
   <AppGlassContainer class="w-[500px]">
     <div v-if="users">
-      <h1 class="text-center text-2xl font-bold uppercase">
+      <h1 class="text-center text-2xl font-bold uppercase flex items-center justify-center">
         <span class="mr-2">Lobby: {{ gameStore.lobbyCode }} </span>
         <UButton
           @click="handleCopy"
@@ -42,7 +42,6 @@ function handleCopy() {
           variant="ghost"
         />
       </h1>
-
       <hr class="my-1" />
 
       <ul class="p-4 space-y-4">

@@ -20,9 +20,13 @@ export const useGameStore = defineStore("game", () => {
     url.searchParams.set("lobby", code);
     url.searchParams.set("username", user.username);
     url.searchParams.set("avatar", user.avatar.toString());
+    url.searchParams.set("language", user.language ?? "en");
     return url.toString();
   }
 
+
+  const router = useRouter();
+  const toast = useToast();
   watch(
     () => socket.value?.data,
     (newValue) => {
@@ -37,6 +41,13 @@ export const useGameStore = defineStore("game", () => {
           case "update-lobby":
             lobby.value = data.lobby;
             break;
+          case "return-to-home":
+            router.push('/');
+            toast.add({
+              title: "Error",
+              description: data.errorMessage,
+              color: "error",
+            })
         }
       } catch (e) {
         console.error("error parsing JSON:" + e);
