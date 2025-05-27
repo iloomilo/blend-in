@@ -51,6 +51,14 @@ function resetLobby(lobby: Lobby): void {
   lobby.word = undefined;
 }
 
+function throwErrorToPeer(peer: any, errorMessage: string|undefined = undefined): void {
+  peer.send(getMessage({
+    type: "return-to-home",
+    errorMessage
+  }));
+  peer.close();
+}
+
 function getLobbyByPeerId(
   peerId: string
 ): { lobby: Lobby; lobbyCode: string } | null {
@@ -109,22 +117,26 @@ export default defineWebSocketHandler({
     }
 
     const lobby = lobbies.get(lobbyCode);
-
-    if (lobby && lobby.users) {
-      if(doesUsernameExistInLobby(lobby, user.username)) {
-        peer.send(getMessage({
-          type: "return-to-home",
-          errorMessage: `Username "${user.username}" already exists in this lobby. Please choose a different username.`
-          }));
-        peer.close();
-        return;
+    if (!lobby || !lobby.users) {
+      throwErrorToPeer(peer, `Lobby with code "${lobbyCode}" does not exist.`);
+      return;
     }
 
-      user.id = peer.id;
-      lobby.users[peer.id] = user;
+    //prevent players from joining if the username is taken
+    if(doesUsernameExistInLobby(lobby, user.username)) {
+      throwErrorToPeer(peer, `Username "${user.username}" already exists in this lobby. Please choose a different username.`);
+      return;
+    }
+    
+    // prevent players from joining if the game is running
+    if(lobby?.state !== LobbyStates.PRE_LOBBY && lobby?.state !== LobbyStates.END) {
+      throwErrorToPeer(peer, `Game is already running in this lobby. Wait until the round ends!`);
+      return;
     }
 
-    if (!lobby) return;
+    // everything worked fine
+    user.id = peer.id;
+    lobby.users[peer.id] = user;
 
     const lobbyMessage = getMessage({
       type: "update-lobby",

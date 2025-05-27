@@ -9,4 +9,4 @@ export type WebSocketMessage =
   | { type: "next-turn" }
   | { type: "decide"; decision: LobbyStates }
   | { type: "vote-user"; peerId: string }
-  | { type: 'return-to-home', errorMessage: string};
+  | { type: 'return-to-home', errorMessage?: string};

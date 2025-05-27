@@ -45,7 +45,7 @@ export const useGameStore = defineStore("game", () => {
             router.push('/');
             toast.add({
               title: "Error",
-              description: data.errorMessage,
+              description: data.errorMessage ?? "An error occurred, please try again.",
               color: "error",
             })
         }
