@@ -23,12 +23,16 @@ function handleDecision(decision: LobbyStates) {
     <UButton
       color="neutral"
       class="w-fit"
+      size="lg"
+      icon="lucide:repeat"
       @click="handleDecision(LobbyStates.RUNNING)"
       >Another Round</UButton
     >
     <UButton
       color="neutral"
       class="w-fit"
+      size="lg"
+      icon="lucide:vote"
       @click="handleDecision(LobbyStates.VOTE)"
       >Vote</UButton
     >

@@ -25,9 +25,14 @@ function handleContinue() {
     class="flex flex-col gap-2 items-center"
   >
     <span>It's your turn!</span>
-    <UButton color="neutral" class="w-fit" @click="handleContinue"
-      >Continue</UButton
-    >
+    <UButton 
+      color="neutral" 
+      size="lg" 
+      icon="lucide:arrow-right-to-line" 
+      class="w-fit" 
+      @click="handleContinue"
+      >Continue
+    </UButton>
   </div>
   <span v-else class="text-2xl">Current Turn: {{ currentTurnUserName }}</span>
 
