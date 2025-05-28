@@ -55,7 +55,8 @@ export default defineWebSocketHandler({
     peer.send(lobbyMessage);
     peer.send(userMessage);
     peer.publish(lobbyCode, lobbyMessage);
-    console.log("WebSocket connection opened", peer.id);
+    console.log(`WebSocket opened connection! ${user.username} (${peer.id}) joined lobby ${lobbyCode}`);
+
   },
   close(peer, event) {
     peer.topics.forEach((topic: string) => {
@@ -75,11 +76,10 @@ export default defineWebSocketHandler({
       peer.publish(topic, message);
       peer.unsubscribe(topic);
     });
-
-    console.log("Websocket closed connection", peer.id, event.reason);
+    console.log(`WebSocket closed connection! Lobby: ${Array.from(peer.topics).join(", ")}, Peer ID: ${peer.id}, Event: ${event.reason} (${event.code})`,);
   },
   error(peer, error) {
-    console.log("WebSocket connection error", peer, error);
+    console.log(`WebSocket error occurred! Peer ID: ${peer.id}, Error: ${error.message}, Lobby: ${Array.from(peer.topics).join(", ")}`);
   },
   message(peer, message) {
     try {
@@ -180,12 +180,12 @@ export default defineWebSocketHandler({
         lobby,
       });
 
-      console.log(msg);
-
       peer.send(msg);
       peer.publish(lobbyCode, msg);
     } catch (e) {
-      console.error("Error handling WebSocket message:", e);
+      console.error("Error processing WebSocket message:", e);
+      console.error("Message content:", message);
+      console.error("User", peer.id);
     } finally {
       console.log("WebSocket message received", peer.id, message);
     }
