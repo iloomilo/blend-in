@@ -48,6 +48,7 @@ export const useGameStore = defineStore("game", () => {
               description: data.errorMessage ?? "An error occurred, please try again.",
               color: "error",
             })
+          break;
         }
       } catch (e) {
         console.error("error parsing JSON:" + e);
