@@ -1,116 +1,19 @@
 import { Lobby } from "~/types/Lobby";
 import { LobbyStates } from "~/types/LobbyStates";
-import { User } from "~/types/User";
 import { WebSocketMessage } from "~/types/WebSocketMessage";
-import { createGameCode, getRandomUsername } from "~/utils/lobbyUtil";
 import { getMessage } from "~/utils/messageUtil";
-import { words } from "../data/words";
 import { DecisionVote } from "~/types/Votes";
-import { AvailableLanguages } from "~/types/Languages";
+import { gameService } from "../services/gameService";
 
 const lobbies = new Map<string, Lobby>();
 const decisions = new Map<string, DecisionVote>();
 
-function getUrlData(urlString: string): { lobbyCode: string; user: User } {
-  const url = new URL(urlString);
-  let avatar = Number(url.searchParams.get("avatar") ?? 0);
-  let lobbyCode = url.searchParams.get("lobby") || createGameCode();
-  let username = url.searchParams.get("username") || getRandomUsername();
-  let language = url.searchParams.get("language") || "en";
-
-  if (isNaN(avatar)) {
-    avatar = 0;
-  }
-
-  const user: User = {
-    username: username,
-    avatar: avatar,
-    language: language as AvailableLanguages
-  };
-
-  return {
-    lobbyCode,
-    user,
-  };
-}
-
-function createLobby(): Lobby {
-  return {
-    state: LobbyStates.PRE_LOBBY,
-    users: {},
-    language: 'en',
-    createdAt: Date.now(),
-  };
-}
-
-function resetLobby(lobby: Lobby): void {
-  lobby.currentVote = undefined;
-  lobby.currentTurnUser = undefined;
-  lobby.firstTurnUser = undefined;
-  lobby.impostor = undefined;
-  lobby.word = undefined;
-}
-
-function throwErrorToPeer(peer: any, errorMessage: string|undefined = undefined): void {
-  peer.send(getMessage({
-    type: "return-to-home",
-    errorMessage
-  }));
-  peer.close();
-}
-
-function getLobbyByPeerId(
-  peerId: string
-): { lobby: Lobby; lobbyCode: string } | null {
-  for (const [lobbyCode, lobby] of lobbies.entries()) {
-    for (const userPeerId in lobby.users) {
-      if (peerId === userPeerId) {
-        return { lobby, lobbyCode };
-      }
-    }
-  }
-  return null;
-}
-
-function getNextTurnUserKey(lobby: Lobby): string {
-  const userKeys = Object.keys(lobby.users);
-  const currentIndex = userKeys.findIndex(
-    (key) => key === lobby.currentTurnUser
-  );
-
-  const nextIndex =
-    currentIndex === -1 ? 0 : (currentIndex + 1) % userKeys.length;
-
-  return userKeys[nextIndex];
-}
-
-function getRandomUser(lobby: Lobby): string | null {
-  const userIds = Object.keys(lobby.users);
-  if (userIds.length === 0) return null;
-
-  const randomIndex = Math.floor(Math.random() * userIds.length);
-  const impostorId = userIds[randomIndex];
-
-  return lobby.users[impostorId]?.id ?? null;
-}
-
-function getRandomWord(lobby: Lobby): string {
-  const lang = lobby.language ?? 'en';
-  const list = words[lang]
-  return list[Math.floor(Math.random() * list.length)];
-}
-
-function doesUsernameExistInLobby(lobby: Lobby, username: string): boolean {
-  const usernames = Object.values(lobby.users).map(user => user.username);
-  return usernames.includes(username);
-}
-
 export default defineWebSocketHandler({
   open(peer) {
-    const { lobbyCode, user } = getUrlData(peer.request.url);
+    const { lobbyCode, user } = gameService.getter.getUrlData(peer.request.url);
 
     if (!lobbies.has(lobbyCode)) {
-      const lobby = createLobby();
+      const lobby = gameService.helper.createLobby();
       lobby.owner = peer.id;
       lobby.language = user.language ?? 'en';
       lobbies.set(lobbyCode, lobby);
@@ -118,19 +21,19 @@ export default defineWebSocketHandler({
 
     const lobby = lobbies.get(lobbyCode);
     if (!lobby || !lobby.users) {
-      throwErrorToPeer(peer, `Lobby with code "${lobbyCode}" does not exist.`);
+      gameService.helper.throwErrorToPeer(peer, `Lobby with code "${lobbyCode}" does not exist.`);
       return;
     }
 
     //prevent players from joining if the username is taken
-    if(doesUsernameExistInLobby(lobby, user.username)) {
-      throwErrorToPeer(peer, `Username "${user.username}" already exists in this lobby. Please choose a different username.`);
+    if(gameService.getter.doesUsernameExistInLobby(lobby, user.username)) {
+      gameService.helper.throwErrorToPeer(peer, `Username "${user.username}" already exists in this lobby. Please choose a different username.`);
       return;
     }
     
     // prevent players from joining if the game is running
     if(lobby?.state !== LobbyStates.PRE_LOBBY && lobby?.state !== LobbyStates.END) {
-      throwErrorToPeer(peer, `Game is already running in this lobby. Wait until the round ends!`);
+      gameService.helper.throwErrorToPeer(peer, `Game is already running in this lobby. Wait until the round ends!`);
       return;
     }
 
@@ -181,7 +84,7 @@ export default defineWebSocketHandler({
   message(peer, message) {
     try {
       const data: WebSocketMessage = message.json();
-      const result = getLobbyByPeerId(peer.id);
+      const result = gameService.getter.getLobbyByPeerId(peer.id, lobbies);
       if (!result) return;
 
       let { lobby, lobbyCode } = result;
@@ -190,14 +93,14 @@ export default defineWebSocketHandler({
           if (lobby?.owner !== peer.id) return;
 
           //reset lobby, if you hit play again
-          resetLobby(lobby);
+          gameService.helper.resetLobby(lobby);
 
-          const impostor = getRandomUser(lobby);
-          const currentTurnUser = getRandomUser(lobby);
+          const impostor = gameService.getter.getRandomUser(lobby);
+          const currentTurnUser = gameService.getter.getRandomUser(lobby);
 
           if (!impostor || !currentTurnUser) return;
           lobby.impostor = impostor;
-          lobby.word = getRandomWord(lobby);
+          lobby.word = gameService.getter.getRandomWord(lobby);
           lobby.state = LobbyStates.STARTING;
           lobby.currentTurnUser = currentTurnUser;
           lobby.firstTurnUser = currentTurnUser;
@@ -211,7 +114,7 @@ export default defineWebSocketHandler({
           break;
 
         case "next-turn":
-          const nextTurnUser = getNextTurnUserKey(lobby);
+          const nextTurnUser = gameService.getter.getNextTurnUserKey(lobby);
           if (lobby.firstTurnUser === nextTurnUser) {
             lobby.state = LobbyStates.DECISION;
           }
