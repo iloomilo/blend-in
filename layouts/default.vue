@@ -15,11 +15,7 @@
       </NuxtLink>
       <slot />
     </main>
-
-    <!-- Hintergrund -->
-    <div class="absolute inset-0 overflow-hidden -z-20">
-      <div class="background"></div>
-    </div>
+    <div class="background" />
   </div>
 </template>
 
@@ -28,11 +24,11 @@
   position: absolute;
   top: 0;
   left: 0;
-  width: 4000px; /* exakt deine Bildbreite */
+  width: 4000px;
   height: 100%;
   background: url("~/assets/images/bg-new.svg") no-repeat;
   background-size: cover;
-  animation: scroll-bg 10s linear infinite alternate;
+  animation: scroll-bg 35s linear infinite alternate;
   pointer-events: none;
 }
 
