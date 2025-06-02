@@ -11,7 +11,7 @@
           sizes="150px sm:250px"
           placeholder
           format="webp"
-          class="drop-shadow-2xl w-[100px] sm:w-[250px]  rounded-full mx-auto"
+          class="drop-shadow-2xl w-[150px] sm:w-[250px]  rounded-full mx-auto"
         />
       </NuxtLink>
       <slot />
