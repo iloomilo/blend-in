@@ -19,7 +19,7 @@ function handleContinue() {
 </script>
 
 <template>
-  <div>    
+  <div v-if="gameStore.lobby?.word && gameStore.lobby?.currentTurnUser">    
     <div
     v-if="gameStore.lobby?.currentTurnUser === userStore.user.id"
     class="flex flex-col gap-2 items-center"
@@ -35,7 +35,6 @@ function handleContinue() {
     </UButton>
   </div>
   <span v-else class="text-2xl">Current Turn: {{ currentTurnUserName }}</span>
-
   </div>
-
+  <UIcon v-else name="lucide:loader-circle" />
 </template>

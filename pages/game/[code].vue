@@ -46,7 +46,12 @@ onMounted(() => {
 </script>
 <template>
   <div class="w-full flex flex-col items-center">
-    <span v-if="!hideWord" class="text-4xl" v-html="turnState" />
-    <component :is="componentMap[game.lobby?.state ?? LobbyStates.RUNNING]" />
+    <div v-if="(!game.lobby?.word || !game.lobby.currentTurnUser || !game.lobby?.state) && !hideWord">
+      <UIcon class="animate-spin" size="50" name="lucide:loader-circle" />
+    </div>
+    <div class="text-center" v-else>
+      <span v-if="!hideWord" class="text-4xl" v-html="turnState" />
+      <component :is="componentMap[game.lobby?.state ?? LobbyStates.RUNNING]" />
+  </div>
   </div>
 </template>
