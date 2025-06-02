@@ -49,6 +49,12 @@ export const useGameStore = defineStore("game", () => {
               color: "error",
             })
           break;
+          case 'message':
+            toast.add({
+              title: data.message,
+              color: data.messageType ?? "primary",
+            });
+            break;
         }
       } catch (e) {
         console.error("error parsing JSON:" + e);

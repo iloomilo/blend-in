@@ -39,9 +39,15 @@ export default defineWebSocketHandler({
     }
 
     // everything worked fine
+    peer.publish(lobbyCode, getMessage({
+      message: `${user.username} joined the lobby.`,
+      type: 'message',
+      messageType: 'info',
+    }));
+  
+
     user.id = peer.id;
     lobby.users[peer.id] = user;
-
     const lobbyMessage = getMessage({
       type: "update-lobby",
       lobby,
@@ -64,19 +70,46 @@ export default defineWebSocketHandler({
       const lobby = lobbies.get(topic);
       if (!lobby) return;
 
+      const leftUser = lobby.users[peer.id];
       delete lobby.users[peer.id];
-      if (Object.keys(lobby.users).length === 0) {
+      if (Object.keys(lobby.users).length < 1) {        
         lobbies.delete(topic);
+        return;
       }
 
-      const message = getMessage({
+      if(lobby.owner === peer.id) {
+        // if the owner leaves, set a new owner
+        lobby.owner  = Object.keys(lobby.users)[0];
+        peer.publish(topic, getMessage({
+          message: `${leftUser.username} has left the lobby. The new owner is: ${lobby.users[lobby.owner].username}`,
+          type: 'message',
+          messageType: 'info',
+        }));
+      } else {
+        peer.publish(topic, getMessage({
+          message: `${leftUser.username} left the lobby.`,
+          type: 'message',
+          messageType: 'info',
+        }));
+      }
+
+      if(Object.keys(lobby.users).length < 3 && lobby.state !== LobbyStates.PRE_LOBBY) {
+        lobby.state = LobbyStates.PRE_LOBBY;
+        gameService.helper.resetLobby(lobby);
+        peer.publish(topic, getMessage({
+          message: `Lobby has been reset due to insufficient players.`,
+          type: 'message',
+          messageType: 'error',
+        }))
+      }
+
+      peer.publish(topic, getMessage({
         type: "update-lobby",
         lobby,
-      });
-
-      peer.publish(topic, message);
+      }));
       peer.unsubscribe(topic);
     });
+
     console.log(`WebSocket closed connection! Lobby: ${Array.from(peer.topics).join(", ")}, Peer ID: ${peer.id}, Event: ${event.reason} (${event.code})`,);
   },
   error(peer, error) {

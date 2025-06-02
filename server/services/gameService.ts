@@ -5,6 +5,7 @@ import { words } from "../data/words";
 import { User } from "~/types/User";
 import { AvailableLanguages } from "~/types/Languages";
 import { createGameCode, getRandomUsername } from "~/utils/lobbyUtil";
+import { ToastProps } from "@nuxt/ui";
 
 function getUrlData(urlString: string): { lobbyCode: string; user: User } {
   const url = new URL(urlString);
@@ -52,6 +53,14 @@ function throwErrorToPeer(peer: any, errorMessage: string|undefined = undefined)
     errorMessage
   }));
   peer.close();
+}
+
+function throwMessageToPeer(peer: any, message: string, type: ToastProps['color'] = "primary"): void {
+  peer.send(getMessage({
+    type: "message",
+    message,
+    messageType: type
+  }));
 }
 
 function getLobbyByPeerId(peerId: string, lobbies: Map<string, Lobby>): 
@@ -118,5 +127,6 @@ export const gameService = {
         createLobby,
         resetLobby,
         throwErrorToPeer,
+        throwMessageToPeer,
     }
 }
