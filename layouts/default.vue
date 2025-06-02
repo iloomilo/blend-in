@@ -30,7 +30,7 @@
   height: 100%;
   background: url("~/assets/images/bg-new.svg") repeat-x;
   background-size: auto 100%;
-  animation: scroll-bg 35s linear infinite;
+  animation: scroll-bg 25s linear alternate infinite;
   pointer-events: none;
 }
 
