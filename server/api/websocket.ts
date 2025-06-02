@@ -10,7 +10,8 @@ const decisions = new Map<string, DecisionVote>();
 
 export default defineWebSocketHandler({
   open(peer) {
-    const { lobbyCode, user } = gameService.getter.getUrlData(peer.request.url);
+    let { lobbyCode, user } = gameService.getter.getUrlData(peer.request.url);
+    lobbyCode = gameService.getter.getFormattedLobbyCode(lobbyCode);
 
     if (!lobbies.has(lobbyCode)) {
       const lobby = gameService.helper.createLobby();

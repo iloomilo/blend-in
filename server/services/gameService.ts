@@ -99,6 +99,10 @@ function doesUsernameExistInLobby(lobby: Lobby, username: string): boolean {
   return usernames.includes(username);
 }
 
+function getFormattedLobbyCode(code: string): string {
+  return code.toLocaleLowerCase();
+}
+
 
 export const gameService = {
     getter: {
@@ -108,6 +112,7 @@ export const gameService = {
         getRandomUser,
         getRandomWord,
         doesUsernameExistInLobby,
+        getFormattedLobbyCode,
     },
     helper: {
         createLobby,
