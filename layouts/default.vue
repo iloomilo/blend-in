@@ -8,7 +8,7 @@
         <NuxtImg
           src="/images/logo.png"
           alt="Blendin Logo"
-          sizes="225px sm:300px"
+          sizes="150px sm:300px"
           placeholder
           format="webp"
           class="drop-shadow-2xl rounded-full mx-auto"
