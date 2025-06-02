@@ -1,5 +1,7 @@
 <template>
-  <div class="relative min-h-screen overflow-hidden rounded-xl text-white text-xl font-semibold">
+  <div
+    class="relative min-h-screen overflow-hidden rounded-xl text-white text-xl font-semibold"
+  >
     <AppInfos class="absolute top-5 z-20" />
 
     <main class="grid h-screen sm:h-[90vh] place-content-center z-10 relative">
@@ -24,20 +26,20 @@
   position: absolute;
   top: 0;
   left: 0;
-  width: 4000px;
+  width: 100%;
   height: 100%;
-  background: url("~/assets/images/bg-new.svg") no-repeat;
-  background-size: cover;
-  animation: scroll-bg 35s linear infinite alternate;
+  background: url("~/assets/images/bg-new.svg") repeat-x;
+  background-size: auto 100%;
+  animation: scroll-bg 35s linear infinite;
   pointer-events: none;
 }
 
 @keyframes scroll-bg {
   0% {
-    transform: translateX(0);
+    background-position: 0 0;
   }
   100% {
-    transform: translateX(-2000px); /* je nach Layout: Hälfte der Bildbreite oder ganzer Durchlauf */
+    background-position: -2000px 0;
   }
 }
 </style>

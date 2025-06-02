@@ -23,7 +23,6 @@ onMounted(() => {
 
 <template>
   <UTabs
-    class="max-h-[50vh]"
     :unmount-on-hide="false"
     :items="items"
     color="neutral"
@@ -39,7 +38,7 @@ onMounted(() => {
         <TabPlayNow />
       </div>
       <div v-else-if="index === 1">
-        <TabGettingStarted class="h-[40vh] overflow-y-auto" />
+        <TabGettingStarted class="h-[370px] overflow-y-auto" />
       </div>
     </template>
   </UTabs>
