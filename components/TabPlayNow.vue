@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { availableLanguages } from '~/config/availableLanguages';
-import type { AvailableLanguages } from '~/types/Languages';
-
+import { availableLanguages } from "~/config/availableLanguages";
+import type { AvailableLanguages } from "~/types/Languages";
 
 const router = useRouter();
 const toast = useToast();
@@ -9,8 +8,7 @@ const state = reactive({ username: "", lobbyCode: "" });
 const hasLobbyCode = computed(() => state.lobbyCode.length > 3);
 const userStore = useUserStore();
 
-
-const selectedLanguage = ref<AvailableLanguages>('de')
+const selectedLanguage = ref<AvailableLanguages>("de");
 function joinGame(): string {
   const code = state?.lobbyCode.length > 3 ? state.lobbyCode : createGameCode();
   router.push(`/game/${code}`);
@@ -36,7 +34,7 @@ function onSubmit() {
 const languageItems = computed(() =>
   Object.entries(availableLanguages).map(([key, flag]) => ({
     value: key,
-    label: flag, 
+    label: flag,
   }))
 );
 
@@ -53,12 +51,11 @@ watch(selectedLanguage, (newLanguage: AvailableLanguages) => {
       class="w-[70%] flex flex-col justify-between h-full"
       @submit="onSubmit"
     >
-      <div class="flex gap-2  items-center">
+      <div class="flex gap-2 items-center">
         <UFormField
           label="Username"
           help="Your name will be visible for the other players."
         >
-    
           <div class="flex gap-4">
             <UInput
               v-model="state.username"
@@ -68,7 +65,7 @@ watch(selectedLanguage, (newLanguage: AvailableLanguages) => {
               icon="i-lucide-user"
             />
             <USelect
-               v-model="selectedLanguage"
+              v-model="selectedLanguage"
               :items="languageItems"
               class="w-18"
             />

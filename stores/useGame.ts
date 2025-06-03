@@ -24,7 +24,6 @@ export const useGameStore = defineStore("game", () => {
     return url.toString();
   }
 
-
   const router = useRouter();
   const toast = useToast();
   watch(
@@ -42,14 +41,15 @@ export const useGameStore = defineStore("game", () => {
             lobby.value = data.lobby;
             break;
           case "return-to-home":
-            router.push('/');
+            router.push("/");
             toast.add({
               title: "Error",
-              description: data.errorMessage ?? "An error occurred, please try again.",
+              description:
+                data.errorMessage ?? "An error occurred, please try again.",
               color: "error",
-            })
-          break;
-          case 'message':
+            });
+            break;
+          case "message":
             toast.add({
               title: data.message,
               color: data.messageType ?? "primary",

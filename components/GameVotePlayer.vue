@@ -24,9 +24,11 @@ function handleVote(peerId: string | null): void {
 <template>
   <div class="text-center">
     <span class="font-light">You can now vote someone</span>
-    
+
     <div class="sm:w-xl">
-      <div class="grid gap-4 mt-4 grid-cols-[repeat(auto-fit,minmax(150px,1fr))]">
+      <div
+        class="grid gap-4 mt-4 grid-cols-[repeat(auto-fit,minmax(150px,1fr))]"
+      >
         <AppGlassContainer
           class="aspect-square h-44 mx-auto flex flex-col hover:scale-105 transition-transform cursor-pointer justify-between items-center group"
           @click="handleVote(user.id ?? null)"
@@ -46,4 +48,3 @@ function handleVote(peerId: string | null): void {
     </div>
   </div>
 </template>
-

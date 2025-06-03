@@ -4,7 +4,7 @@
       🎮 <span>How To Play Blendin?</span>
     </h2>
 
-    <hr>
+    <hr />
 
     <p class="text-lg leading-relaxed">
       <strong>Blendin</strong> is a fun and social word-guessing game for

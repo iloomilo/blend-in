@@ -25,7 +25,7 @@ function getImposter(): User | null {
   const imposterPeerId = gameStore.lobby?.impostor;
   if (!imposterPeerId) return null;
 
-  return gameStore.lobby?.users[imposterPeerId] ?? null;;
+  return gameStore.lobby?.users[imposterPeerId] ?? null;
 }
 
 function handlePlayAgain(): void {
@@ -38,11 +38,17 @@ function handlePlayAgain(): void {
 </script>
 <template>
   <div class="text-center text-4xl">
-    <p >
+    <p>
       The imposter was:
       <span class="text-red-500">{{ getImposter()?.username }}</span>
     </p>
-    <p class="text-xl "> {{ getHighestVoted(gameStore.lobby) === getImposter()?.id ? 'You found the imposter!' : "You didn't find the imposter..." }}</p>
+    <p class="text-xl">
+      {{
+        getHighestVoted(gameStore.lobby) === getImposter()?.id
+          ? "You found the imposter!"
+          : "You didn't find the imposter..."
+      }}
+    </p>
     <UButton
       v-if="gameStore.lobby?.owner === userStore.user.id"
       @click="handlePlayAgain"

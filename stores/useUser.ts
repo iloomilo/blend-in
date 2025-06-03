@@ -7,7 +7,7 @@ export const useUserStore = defineStore("user", () => {
     id: "",
     username: "",
     avatar: 0,
-    language: "de"
+    language: "de",
   });
 
   function setUser(newUser: User) {
@@ -28,7 +28,6 @@ export const useUserStore = defineStore("user", () => {
     user,
     setUser,
     resetUser,
-    setLanguage
-    
+    setLanguage,
   };
 });

@@ -19,21 +19,21 @@ function handleContinue() {
 </script>
 
 <template>
-  <div>    
+  <div>
     <div
-    v-if="gameStore.lobby?.currentTurnUser === userStore.user.id"
-    class="flex flex-col gap-2 items-center"
-  >
-    <span>It's your turn!</span>
-    <UButton 
-      color="neutral" 
-      size="lg" 
-      icon="lucide:arrow-right-to-line" 
-      class="w-fit" 
-      @click="handleContinue"
-      >Continue
-    </UButton>
-  </div>
-  <span v-else class="text-2xl">Current Turn: {{ currentTurnUserName }}</span>
+      v-if="gameStore.lobby?.currentTurnUser === userStore.user.id"
+      class="flex flex-col gap-2 items-center"
+    >
+      <span>It's your turn!</span>
+      <UButton
+        color="neutral"
+        size="lg"
+        icon="lucide:arrow-right-to-line"
+        class="w-fit"
+        @click="handleContinue"
+        >Continue
+      </UButton>
+    </div>
+    <span v-else class="text-2xl">Current Turn: {{ currentTurnUserName }}</span>
   </div>
 </template>

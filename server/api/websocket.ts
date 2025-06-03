@@ -16,35 +16,49 @@ export default defineWebSocketHandler({
     if (!lobbies.has(lobbyCode)) {
       const lobby = gameService.helper.createLobby();
       lobby.owner = peer.id;
-      lobby.language = user.language ?? 'en';
+      lobby.language = user.language ?? "en";
       lobbies.set(lobbyCode, lobby);
     }
 
     const lobby = lobbies.get(lobbyCode);
     if (!lobby || !lobby.users) {
-      gameService.helper.throwErrorToPeer(peer, `Lobby with code "${lobbyCode}" does not exist.`);
+      gameService.helper.throwErrorToPeer(
+        peer,
+        `Lobby with code "${lobbyCode}" does not exist.`
+      );
       return;
     }
 
     //prevent players from joining if the username is taken
-    if(gameService.getter.doesUsernameExistInLobby(lobby, user.username)) {
-      gameService.helper.throwErrorToPeer(peer, `Username "${user.username}" already exists in this lobby. Please choose a different username.`);
+    if (gameService.getter.doesUsernameExistInLobby(lobby, user.username)) {
+      gameService.helper.throwErrorToPeer(
+        peer,
+        `Username "${user.username}" already exists in this lobby. Please choose a different username.`
+      );
       return;
     }
-    
+
     // prevent players from joining if the game is running
-    if(lobby?.state !== LobbyStates.PRE_LOBBY && lobby?.state !== LobbyStates.END) {
-      gameService.helper.throwErrorToPeer(peer, `Game is already running in this lobby. Wait until the round ends!`);
+    if (
+      lobby?.state !== LobbyStates.PRE_LOBBY &&
+      lobby?.state !== LobbyStates.END
+    ) {
+      gameService.helper.throwErrorToPeer(
+        peer,
+        `Game is already running in this lobby. Wait until the round ends!`
+      );
       return;
     }
 
     // everything worked fine
-    peer.publish(lobbyCode, getMessage({
-      message: `${user.username} joined the lobby.`,
-      type: 'message',
-      messageType: 'info',
-    }));
-  
+    peer.publish(
+      lobbyCode,
+      getMessage({
+        message: `${user.username} joined the lobby.`,
+        type: "message",
+        messageType: "info",
+      })
+    );
 
     user.id = peer.id;
     lobby.users[peer.id] = user;
@@ -62,8 +76,9 @@ export default defineWebSocketHandler({
     peer.send(lobbyMessage);
     peer.send(userMessage);
     peer.publish(lobbyCode, lobbyMessage);
-    console.log(`WebSocket opened connection! ${user.username} (${peer.id}) joined lobby ${lobbyCode}`);
-
+    console.log(
+      `WebSocket opened connection! ${user.username} (${peer.id}) joined lobby ${lobbyCode}`
+    );
   },
   close(peer, event) {
     peer.topics.forEach((topic: string) => {
@@ -72,48 +87,75 @@ export default defineWebSocketHandler({
 
       const leftUser = lobby.users[peer.id];
       delete lobby.users[peer.id];
-      if (Object.keys(lobby.users).length < 1) {        
+      if (Object.keys(lobby.users).length < 1) {
         lobbies.delete(topic);
         return;
       }
 
-      if(lobby.owner === peer.id) {
+      if (lobby.owner === peer.id) {
         // if the owner leaves, set a new owner
-        lobby.owner  = Object.keys(lobby.users)[0];
-        peer.publish(topic, getMessage({
-          message: `${leftUser.username} has left the lobby. The new owner is: ${lobby.users[lobby.owner].username}`,
-          type: 'message',
-          messageType: 'info',
-        }));
+        lobby.owner = Object.keys(lobby.users)[0];
+        peer.publish(
+          topic,
+          getMessage({
+            message: `${
+              leftUser.username
+            } has left the lobby. The new owner is: ${
+              lobby.users[lobby.owner].username
+            }`,
+            type: "message",
+            messageType: "info",
+          })
+        );
       } else {
-        peer.publish(topic, getMessage({
-          message: `${leftUser.username} left the lobby.`,
-          type: 'message',
-          messageType: 'info',
-        }));
+        peer.publish(
+          topic,
+          getMessage({
+            message: `${leftUser.username} left the lobby.`,
+            type: "message",
+            messageType: "info",
+          })
+        );
       }
 
-      if(Object.keys(lobby.users).length < 3 && lobby.state !== LobbyStates.PRE_LOBBY) {
-        lobby.state = LobbyStates.PRE_LOBBY;
+      if (
+        Object.keys(lobby.users).length < 3 &&
+        lobby.state !== LobbyStates.PRE_LOBBY
+      ) {
         gameService.helper.resetLobby(lobby);
-        peer.publish(topic, getMessage({
-          message: `Lobby has been reset due to insufficient players.`,
-          type: 'message',
-          messageType: 'error',
-        }))
+        lobby.state = LobbyStates.PRE_LOBBY;
+        peer.publish(
+          topic,
+          getMessage({
+            message: `Lobby has been reset due to insufficient players.`,
+            type: "message",
+            messageType: "error",
+          })
+        );
       }
 
-      peer.publish(topic, getMessage({
-        type: "update-lobby",
-        lobby,
-      }));
+      peer.publish(
+        topic,
+        getMessage({
+          type: "update-lobby",
+          lobby,
+        })
+      );
       peer.unsubscribe(topic);
     });
 
-    console.log(`WebSocket closed connection! Lobby: ${Array.from(peer.topics).join(", ")}, Peer ID: ${peer.id}, Event: ${event.reason} (${event.code})`,);
+    console.log(
+      `WebSocket closed connection! Lobby: ${Array.from(peer.topics).join(
+        ", "
+      )}, Peer ID: ${peer.id}, Event: ${event.reason} (${event.code})`
+    );
   },
   error(peer, error) {
-    console.log(`WebSocket error occurred! Peer ID: ${peer.id}, Error: ${error.message}, Lobby: ${Array.from(peer.topics).join(", ")}`);
+    console.log(
+      `WebSocket error occurred! Peer ID: ${peer.id}, Error: ${
+        error.message
+      }, Lobby: ${Array.from(peer.topics).join(", ")}`
+    );
   },
   message(peer, message) {
     try {
@@ -140,6 +182,9 @@ export default defineWebSocketHandler({
           lobby.firstTurnUser = currentTurnUser;
 
           setTimeout(() => {
+            // if the game is still in starting state, change it to running
+            // this is to prevent game from starting if the lobby was closed
+            if (lobby.state !== LobbyStates.STARTING) return;
             lobby.state = LobbyStates.RUNNING;
             const message = getMessage({ type: "update-lobby", lobby });
             peer.send(message);

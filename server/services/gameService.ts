@@ -21,7 +21,7 @@ function getUrlData(urlString: string): { lobbyCode: string; user: User } {
   const user: User = {
     username: username,
     avatar: avatar,
-    language: language as AvailableLanguages
+    language: language as AvailableLanguages,
   };
 
   return {
@@ -34,7 +34,7 @@ function createLobby(): Lobby {
   return {
     state: LobbyStates.PRE_LOBBY,
     users: {},
-    language: 'en',
+    language: "en",
     createdAt: Date.now(),
   };
 }
@@ -47,24 +47,37 @@ function resetLobby(lobby: Lobby): void {
   lobby.word = undefined;
 }
 
-function throwErrorToPeer(peer: any, errorMessage: string|undefined = undefined): void {
-  peer.send(getMessage({
-    type: "return-to-home",
-    errorMessage
-  }));
+function throwErrorToPeer(
+  peer: any,
+  errorMessage: string | undefined = undefined
+): void {
+  peer.send(
+    getMessage({
+      type: "return-to-home",
+      errorMessage,
+    })
+  );
   peer.close();
 }
 
-function throwMessageToPeer(peer: any, message: string, type: ToastProps['color'] = "primary"): void {
-  peer.send(getMessage({
-    type: "message",
-    message,
-    messageType: type
-  }));
+function throwMessageToPeer(
+  peer: any,
+  message: string,
+  type: ToastProps["color"] = "primary"
+): void {
+  peer.send(
+    getMessage({
+      type: "message",
+      message,
+      messageType: type,
+    })
+  );
 }
 
-function getLobbyByPeerId(peerId: string, lobbies: Map<string, Lobby>): 
-{ lobby: Lobby; lobbyCode: string } | null {
+function getLobbyByPeerId(
+  peerId: string,
+  lobbies: Map<string, Lobby>
+): { lobby: Lobby; lobbyCode: string } | null {
   for (const [lobbyCode, lobby] of lobbies.entries()) {
     for (const userPeerId in lobby.users) {
       if (peerId === userPeerId) {
@@ -98,13 +111,13 @@ function getRandomUser(lobby: Lobby): string | null {
 }
 
 function getRandomWord(lobby: Lobby): string {
-  const lang = lobby.language ?? 'en';
-  const list = words[lang]
+  const lang = lobby.language ?? "en";
+  const list = words[lang];
   return list[Math.floor(Math.random() * list.length)];
 }
 
 function doesUsernameExistInLobby(lobby: Lobby, username: string): boolean {
-  const usernames = Object.values(lobby.users).map(user => user.username);
+  const usernames = Object.values(lobby.users).map((user) => user.username);
   return usernames.includes(username);
 }
 
@@ -112,21 +125,20 @@ function getFormattedLobbyCode(code: string): string {
   return code.toLocaleLowerCase();
 }
 
-
 export const gameService = {
-    getter: {
-        getUrlData,
-        getLobbyByPeerId,
-        getNextTurnUserKey,
-        getRandomUser,
-        getRandomWord,
-        doesUsernameExistInLobby,
-        getFormattedLobbyCode,
-    },
-    helper: {
-        createLobby,
-        resetLobby,
-        throwErrorToPeer,
-        throwMessageToPeer,
-    }
-}
+  getter: {
+    getUrlData,
+    getLobbyByPeerId,
+    getNextTurnUserKey,
+    getRandomUser,
+    getRandomWord,
+    doesUsernameExistInLobby,
+    getFormattedLobbyCode,
+  },
+  helper: {
+    createLobby,
+    resetLobby,
+    throwErrorToPeer,
+    throwMessageToPeer,
+  },
+};

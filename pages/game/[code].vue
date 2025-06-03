@@ -16,14 +16,13 @@ const turnState = computed(() => {
   return userStore.user.id === game.lobby?.impostor
     ? 'You are the <span class="text-red-500">Imposter</span>'
     : `The word is: <span class="text-orange-500">${game.lobby?.word}</span>`;
-  });
- 
+});
+
 const hideWordStates = [
   LobbyStates.STARTING,
   LobbyStates.PRE_LOBBY,
   LobbyStates.END,
 ];
-
 
 const hideWord = computed(() => {
   const state = game.lobby?.state;
@@ -46,12 +45,23 @@ onMounted(() => {
 </script>
 <template>
   <div class="w-full flex flex-col items-center">
-    <div v-if="(!game.lobby?.word || !game.lobby.currentTurnUser || !game.lobby?.state) && !hideWord">
+    <div
+      v-if="
+        (!game.lobby?.word ||
+          !game.lobby.currentTurnUser ||
+          !game.lobby?.state) &&
+        game.lobby?.state !== LobbyStates.PRE_LOBBY
+      "
+    >
+      {{ game.lobby?.state }}
+      {{ game.lobby?.word }}
+      {{ game.lobby?.currentTurnUser }}
+      {{ LobbyStates.PRE_LOBBY }}
       <UIcon class="animate-spin" size="50" name="lucide:loader-circle" />
     </div>
     <div class="text-center" v-else>
       <span v-if="!hideWord" class="text-4xl" v-html="turnState" />
       <component :is="componentMap[game.lobby?.state ?? LobbyStates.RUNNING]" />
-  </div>
+    </div>
   </div>
 </template>

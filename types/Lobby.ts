@@ -7,7 +7,7 @@ export interface Lobby {
   state: LobbyStates;
   users: Record<string, User>;
   createdAt: number;
-  language: AvailableLanguages,
+  language: AvailableLanguages;
   owner?: string;
   impostor?: string;
   currentTurnUser?: string;
