@@ -7,6 +7,7 @@
       Imprint
     </NuxtLink>
     <div class="flex items-center gap-4">
+      <HideModeToggle color="neutral" label="Hide Mode" />
       <UTooltip :delay-duration="0" text="🔓 This project is 100% open source!">
         <NuxtLink
           to="https://github.com/iloomilo/blend-in"

@@ -11,8 +11,13 @@ const game = useGameStore();
 const route = useRoute();
 const code = (route.params.code ?? "") as string;
 const userStore = useUserStore();
+const { hideMode } = useHideMode();
 
 const turnState = computed(() => {
+  if(hideMode.value) {
+    return 'You have hidden the world.'
+  }
+
   return userStore.user.id === game.lobby?.impostor
     ? 'You are the <span class="text-red-500">Imposter</span>'
     : `The word is: <span class="text-orange-500">${game.lobby?.word}</span>`;
@@ -53,14 +58,12 @@ onMounted(() => {
         game.lobby?.state !== LobbyStates.PRE_LOBBY
       "
     >
-      {{ game.lobby?.state }}
-      {{ game.lobby?.word }}
-      {{ game.lobby?.currentTurnUser }}
-      {{ LobbyStates.PRE_LOBBY }}
       <UIcon class="animate-spin" size="50" name="lucide:loader-circle" />
     </div>
     <div class="text-center" v-else>
-      <span v-if="!hideWord" class="text-4xl" v-html="turnState" />
+      <div>
+        <span v-if="!hideWord" class="text-4xl" v-html="turnState" />
+      </div>
       <component :is="componentMap[game.lobby?.state ?? LobbyStates.RUNNING]" />
     </div>
   </div>

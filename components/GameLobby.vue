@@ -46,7 +46,7 @@ function handleCopy() {
       </h1>
       <hr class="my-1" />
 
-      <ul class="p-4 space-y-4">
+      <ul class="p-4 space-y-4 max-h-[20rem] overflow-y-auto">
         <li class="px-2 py-1 bg-white/10 rounded-lg" v-for="user in users">
           {{
             userStore.user.id === user.id
@@ -54,22 +54,23 @@ function handleCopy() {
               : user.username
           }}
         </li>
-
-        <UButton
-          type="submit"
-          color="neutral"
-          class="mt-2 flex justify-center items-center w-full text-center uppercase"
-          size="xl"
-          :loading="!isGameStartable"
-          :disabled="
-            gameStore.lobby?.owner !== userStore.user.id || !isGameStartable
-          "
-          :trailing-icon="isGameStartable ? 'i-lucide-joystick' : ''"
-          @click="gameStore.startGame"
-        >
-          {{ isGameStartable ? "Start the game" : "Waiting for players..." }}
-        </UButton>
       </ul>
+      <div class="px-4 pb-3">
+        <UButton
+            type="submit"
+            color="neutral"
+            class="mt-2 flex justify-center items-center w-full text-center uppercase"
+            size="xl"
+            :loading="!isGameStartable"
+            :disabled="
+              gameStore.lobby?.owner !== userStore.user.id || !isGameStartable
+            "
+            :trailing-icon="isGameStartable ? 'i-lucide-joystick' : ''"
+            @click="gameStore.startGame"
+          >
+            {{ isGameStartable ? "Start the game" : "Waiting for players..." }}
+          </UButton>
+      </div>
     </div>
     <div v-else>Loading...</div>
   </AppGlassContainer>
